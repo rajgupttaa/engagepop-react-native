@@ -1,0 +1,35 @@
+{
+  "name": "@engagepop/react-native",
+  "version": "0.1.0",
+  "description": "EngagePop React Native SDK — native push + in-app messages.",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "source": "src/index.ts",
+  "files": [
+    "src",
+    "lib",
+    "ios",
+    "android",
+    "EngagePopReactNative.podspec",
+    "!android/build",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": ["engagepop", "push", "notifications", "react-native"],
+  "license": "MIT",
+  "homepage": "https://engagepop.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/engagepop/engagepop-react-native.git"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}

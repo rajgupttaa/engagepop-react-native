@@ -23,7 +23,7 @@
   "homepage": "https://engagepop.com",
   "repository": {
     "type": "git",
-    "url": "https://github.com/engagepop/engagepop-react-native.git"
+    "url": "https://github.com/rajgupttaa/engagepop-react-native.git"
   },
   "peerDependencies": {
     "react": "*",

@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.license      = "MIT"
   s.authors      = { "EngagePop" => "support@engagepop.com" }
   s.platforms    = { :ios => "13.0" }
-  s.source       = { :git => "https://github.com/engagepop/engagepop-react-native.git", :tag => s.version }
+  s.source       = { :git => "https://github.com/rajgupttaa/engagepop-react-native.git", :tag => s.version }
   s.source_files = "ios/**/*.{h,m,mm,swift}"
 
   s.dependency "React-Core"

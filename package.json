@@ -16,6 +16,7 @@
   ],
   "scripts": {
     "build": "tsc",
+    "prepare": "tsc",
     "typecheck": "tsc --noEmit"
   },
   "keywords": ["engagepop", "push", "notifications", "react-native"],

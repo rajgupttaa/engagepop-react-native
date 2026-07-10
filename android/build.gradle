@@ -18,5 +18,5 @@ repositories {
 dependencies {
     implementation "com.facebook.react:react-android"
     // The native Android SDK does the real work.
-    implementation "com.engagepop:engagepop-android:0.2.4"
+    implementation "com.engagepop:engagepop-android:0.2.5"
 }

@@ -11,7 +11,7 @@ class EngagePopReactNative: RCTEventEmitter {
 
     override static func requiresMainQueueSetup() -> Bool { true }
 
-    override func supportedEvents() -> [String]! { ["EngagePopDeepLink"] }
+    override func supportedEvents() -> [String]! { ["EngagePopDeepLink", "EngagePopInboxChange"] }
 
     override func startObserving() { hasListeners = true }
     override func stopObserving() { hasListeners = false }
@@ -21,12 +21,51 @@ class EngagePopReactNative: RCTEventEmitter {
         let base = (options["apiBaseUrl"] as? String).flatMap { URL(string: $0) }
             ?? URL(string: "https://edge.engagepop.com")!
         let debug = options["debugLogging"] as? Bool ?? false
-        EngagePop.configure(EngagePopConfig(siteKey: siteKey, appKey: appKey, apiBaseURL: base, debugLogging: debug))
+        let autoShow = options["autoShowInAppMessages"] as? Bool ?? true
+        EngagePop.configure(EngagePopConfig(
+            siteKey: siteKey, appKey: appKey, apiBaseURL: base,
+            debugLogging: debug, autoShowInAppMessages: autoShow
+        ))
         EngagePop.shared.deepLinkHandler = { [weak self] url in
             guard let self = self, self.hasListeners else { return }
             self.sendEvent(withName: "EngagePopDeepLink", body: url.absoluteString)
         }
+        // Re-emit inbox changes to JS.
+        NotificationCenter.default.addObserver(
+            forName: Inbox.didChangeNotification, object: nil, queue: .main
+        ) { [weak self] _ in
+            guard let self = self, self.hasListeners else { return }
+            self.sendEvent(withName: "EngagePopInboxChange", body: nil)
+        }
     }
+
+    // MARK: - Inbox
+
+    @objc(getInbox:rejecter:)
+    func getInbox(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: RCTPromiseRejectBlock) {
+        let messages = EngagePop.shared.inbox?.messages ?? []
+        resolve(messages.map { [
+            "id": $0.id, "title": $0.title, "body": $0.body,
+            "url": $0.url ?? NSNull(), "receivedAt": $0.receivedAt.timeIntervalSince1970, "read": $0.read,
+        ] })
+    }
+
+    @objc(unreadCount:rejecter:)
+    func unreadCount(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: RCTPromiseRejectBlock) {
+        resolve(EngagePop.shared.inbox?.unreadCount ?? 0)
+    }
+
+    @objc(markRead:)
+    func markRead(_ id: String) { EngagePop.shared.inbox?.markRead(id) }
+
+    @objc(markAllRead)
+    func markAllRead() { EngagePop.shared.inbox?.markAllRead() }
+
+    @objc(removeMessage:)
+    func removeMessage(_ id: String) { EngagePop.shared.inbox?.remove(id) }
+
+    @objc(clearInbox)
+    func clearInbox() { EngagePop.shared.inbox?.clear() }
 
     @objc(requestPushPermission:rejecter:)
     func requestPushPermission(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: RCTPromiseRejectBlock) {

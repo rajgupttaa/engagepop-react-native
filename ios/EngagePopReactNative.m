@@ -23,4 +23,18 @@ RCT_EXTERN_METHOD(reset)
 
 RCT_EXTERN_METHOD(refreshInAppMessages)
 
+RCT_EXTERN_METHOD(getInbox:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(unreadCount:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(markRead:(NSString *)id)
+
+RCT_EXTERN_METHOD(markAllRead)
+
+RCT_EXTERN_METHOD(removeMessage:(NSString *)id)
+
+RCT_EXTERN_METHOD(clearInbox)
+
 @end

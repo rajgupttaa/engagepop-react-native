@@ -1,5 +1,16 @@
 import { NativeModules, NativeEventEmitter, EmitterSubscription } from "react-native";
 
+/** A captured notification, for the in-app inbox / bell. */
+export interface EngagePopMessage {
+  id: string;
+  title: string;
+  body: string;
+  url: string | null;
+  /** Seconds since epoch (iOS) / millis since epoch (Android) — treat as a sort key. */
+  receivedAt: number;
+  read: boolean;
+}
+
 /** The native module surface, implemented by the iOS + Android bridges. */
 interface EngagePopNative {
   configure(siteKey: string, appKey: string, options: object): void;
@@ -9,6 +20,12 @@ interface EngagePopNative {
   convert(value: number, order: string | null, campaignId: number): void;
   reset(): void;
   refreshInAppMessages(): void;
+  getInbox(): Promise<EngagePopMessage[]>;
+  unreadCount(): Promise<number>;
+  markRead(id: string): void;
+  markAllRead(): void;
+  removeMessage(id: string): void;
+  clearInbox(): void;
 }
 
 const Native = NativeModules.EngagePopReactNative as EngagePopNative | undefined;
@@ -27,6 +44,9 @@ export interface EngagePopOptions {
   apiBaseUrl?: string;
   /** Log SDK network calls to the native console. */
   debugLogging?: boolean;
+  /** When true (default), show an eligible in-app popup on launch. Set false to
+   *  control placement via refreshInAppMessages(). */
+  autoShowInAppMessages?: boolean;
 }
 
 /** Configure the SDK. Call once, as early as possible. */
@@ -70,9 +90,46 @@ let emitter: NativeEventEmitter | null = null;
  * Subscribe to deep links carried by tapped pushes / popups. Returns a
  * subscription — call `.remove()` to unsubscribe.
  */
-export function onDeepLink(handler: (url: string) => void): EmitterSubscription {
+function events(): NativeEventEmitter {
   if (!emitter) emitter = new NativeEventEmitter(Native as unknown as object);
-  return emitter.addListener("EngagePopDeepLink", (url: string) => handler(url));
+  return emitter;
+}
+
+export function onDeepLink(handler: (url: string) => void): EmitterSubscription {
+  return events().addListener("EngagePopDeepLink", (url: string) => handler(url));
+}
+
+// --- Notification inbox / bell ---
+
+/** All captured notifications, newest first. */
+export function getInbox(): Promise<EngagePopMessage[]> {
+  return native().getInbox();
+}
+
+/** Unread count — bind to your bell badge. */
+export function unreadCount(): Promise<number> {
+  return native().unreadCount();
+}
+
+export function markRead(id: string): void {
+  native().markRead(id);
+}
+
+export function markAllRead(): void {
+  native().markAllRead();
+}
+
+export function removeMessage(id: string): void {
+  native().removeMessage(id);
+}
+
+export function clearInbox(): void {
+  native().clearInbox();
+}
+
+/** Fires when the inbox changes — refresh your bell. Returns a subscription. */
+export function onInboxChange(handler: () => void): EmitterSubscription {
+  return events().addListener("EngagePopInboxChange", () => handler());
 }
 
 export default {
@@ -84,4 +141,11 @@ export default {
   reset,
   refreshInAppMessages,
   onDeepLink,
+  getInbox,
+  unreadCount,
+  markRead,
+  markAllRead,
+  removeMessage,
+  clearInbox,
+  onInboxChange,
 };

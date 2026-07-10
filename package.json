@@ -1,6 +1,6 @@
 {
   "name": "@engagepop/react-native",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "EngagePop React Native SDK — native push + in-app messages.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

@@ -35,6 +35,31 @@ const sub = EngagePop.onDeepLink((url) => {
 EngagePop.refreshInAppMessages();
 ```
 
+## Targeting
+
+Attributes passed to `identify()` drive targeting across EngagePop:
+
+- **Push audience filters** — in the dashboard push composer, add a filter like
+  `plan is Pro`: the notification only reaches devices whose identify
+  attributes match every filter.
+- **Popup "User attribute" conditions** *(0.2.4+)* — popup campaigns can target
+  the same attributes (e.g. show an offer only when `plan is Pro`). Older SDK
+  versions skip the condition, so update before gating exclusive content on it.
+- **`{{merge tags}}`** in popups.
+
+## Delivery receipts
+
+The dashboard's Sent → Delivered → Opened funnel needs a "delivered" signal
+from the device:
+
+- **Android** — automatic (reported when the FCM handler runs; pure
+  background `notification`-type messages are counted when tapped).
+- **iOS** — add a **Notification Service Extension** target in Xcode whose
+  class subclasses `EngagePopNotificationService` (the same extension that
+  enables rich push images — see the
+  [iOS SDK README](https://github.com/rajgupttaa/engagepop-ios-SDK#delivery-receipts)
+  for the two-line subclass).
+
 ## Native glue
 
 A little native wiring is still required (same as any RN push library):

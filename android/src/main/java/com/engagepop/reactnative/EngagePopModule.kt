@@ -75,7 +75,7 @@ class EngagePopModule(private val reactContext: ReactApplicationContext) :
 
     @ReactMethod
     fun requestPushPermission(promise: Promise) {
-        currentActivity?.let { EngagePop.requestNotificationPermission(it) }
+        reactContext.currentActivity?.let { EngagePop.requestNotificationPermission(it) }
         promise.resolve(true)
     }
 

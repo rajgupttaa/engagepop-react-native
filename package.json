@@ -1,6 +1,6 @@
 {
   "name": "@engagepop/react-native",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "EngagePop React Native SDK — native push + in-app messages.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -19,7 +19,12 @@
     "prepare": "tsc",
     "typecheck": "tsc --noEmit"
   },
-  "keywords": ["engagepop", "push", "notifications", "react-native"],
+  "keywords": [
+    "engagepop",
+    "push",
+    "notifications",
+    "react-native"
+  ],
   "license": "MIT",
   "homepage": "https://engagepop.com",
   "repository": {
